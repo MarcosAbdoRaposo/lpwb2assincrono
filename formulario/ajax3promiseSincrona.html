@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="demo">
+    <h1>Extra: Utilizando Promise mas fazendo uma chamada Sincrona!</h1>
+    <input type="text" name="cep" id="cep" placeholder="Digite seu CEP">
+    <button type="button" onclick="buscaCEP()">Pesquisar CEP</button>
+    <br>
+    <input type="text" id="logradouro" placeholder="Logradouro">
+    <br>
+    <input type="text" id="complemento" placeholder="Complemento">
+    <br>
+    <input type="text" id="unidade" placeholder="Unidade">
+    <br>
+    <input type="text" id="bairro" placeholder="Bairro">
+    <br>
+    <input type="text" id="localidade" placeholder="Cidade">
+    <br>
+    <input type="text" id="uf" placeholder="UF">
+</div>
+<script>
+function buscaCEP() {
+  // obtém o CEP digitado - não faz nenhuma validação
+  // para simplificar vamos acreditar que o usuário informará um CEP válido
+  let cep =  parseInt(document.getElementById("cep").value); 
+
+
+
+  let minhaPromise = new Promise(function(resolve, reject) {
+
+    const url = "https://viacep.com.br/ws/"+cep+"/json"
+
+    // cria objeto XMLHttpRequest que será usado na chamada AJAX
+    var xhttp = new XMLHttpRequest();
+
+    xhttp.open("GET", url, false);
+    // envia a solicitação
+    xhttp.send();
+
+    /* A operação foi bem-sucedida */
+  if (xhttp.readyState == 4 && xhttp.status === 200) {
+    // Chamamos 'resolve' quando a operação termina com sucesso.
+    // O valor passado será o resultado da Promise.
+    resolve(xhttp.responseText);
+  } else {
+    // Chamamos 'reject' quando ocorre um erro.
+    // O valor passado é geralmente um objeto Error.
+    reject(new Error("Mensagem de erro"));
+  }
+})
+
+
+  // O fetch retorna uma Promise com o objeto Response
+ // minhaPromise
+  // O primeiro .then() lida com o objeto Response
+//  .then(response => {
+//
+//    console.log('resposta recebida - status OK');
+ //   console.log(response);
+
+    // Converte o corpo da resposta para o formato desejado (ex: JSON)
+  //  return response; 
+ // })
+
+  // O segundo .then() lida com os dados já convertidos (o objeto JSON)
+  minhaPromise.then(resposta => {
+    console.log('Dados recebidos no Then:', resposta);
+ 
+    // Converte para Objeto Json
+    let endereco = JSON.parse(resposta);
+ 
+    // Aqui você trabalha com os dados no seu código
+
+    document.getElementById("logradouro").value=endereco.logradouro;
+    document.getElementById("complemento").value=endereco.complemento ;
+    document.getElementById("unidade").value=endereco.unidade;
+      
+    document.getElementById("bairro").value=endereco.bairro ;
+    document.getElementById("localidade").value=endereco.localidade ;
+    document.getElementById("uf").value=endereco.uf ;
+  })
+  // .catch() lida com erros de rede ou o erro lançado no primeiro .then
+  .catch(error => {
+    console.error('Ocorreu um erro na requisição:', error);
+  });
+}
+</script>
+
+</body>
+</html>
